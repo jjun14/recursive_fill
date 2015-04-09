@@ -1,0 +1,116 @@
+<html>
+  <head>
+    <title>Recursive Fill</title>
+    <style>
+      * 
+      {
+        vertical-align: baseline;
+        font-weight: inherit;
+        font-family: inherit;
+        font-size: 100%;
+        padding: 0;
+        margin: 0;
+        border: 0 none;
+        outline: 0;
+      }
+
+      #grid {
+        width: 220px;
+      }
+      .block {
+        display: inline-block;
+        height: 20px;
+        width: 20px;
+        border: 1px solid silver;
+      }
+      .red {
+        background-color: red;
+      }    
+      .blue {
+        background-color: blue;
+      }    
+      .green {
+        background-color: green;
+      }    
+      .yellow {
+        background-color: yellow;
+      }    
+      .black {
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid">
+      
+    </div>
+    <script>
+      var mapping = {
+        0: 'red',
+        1: 'blue',
+        2: 'green',
+        3: 'yellow',
+        4: 'black'
+      }
+
+      var blocks = [0,0,0,0,1,1,1,1,0,0,
+                  0,2,2,2,2,2,2,1,0,0,
+                  0,2,3,3,2,3,3,3,3,1];
+
+      // create the grid
+      function drawWorld(){
+        var output = ""
+        var grid = document.getElementById('grid')
+        for(var i = 0; i < blocks.length; i++){
+          output += "<div class='block "+mapping[blocks[i]]+"'></div>";
+        }
+        grid.innerHTML = output;
+      }
+
+      // add click event and get the coordinates of the clicked square
+      document.onclick = function(e){
+        // console.log("x:", Math.floor(e.x/22))
+        // console.log("y:", Math.floor(e.y/22))
+        var x = Math.floor(e.x/22);
+        var y = Math.floor(e.y/22);
+        start(x, y);
+      }
+
+      // block to start recursive fill
+      function start(x, y){
+        // get color of the starting block
+        var start_color = blocks[x + y * 10];
+        var new_color = 4;
+        rfill(x, y, start_color, new_color);
+      }
+
+      // function to recursively fill all adjacent blocks
+      // x < 0 prevents the recursion from spanning to blocks that are adjacent in the array
+      // but not in the grid
+      function rfill(x,y, start_color, new_color){
+        // set restrictions for x and y boundaries
+        if(x > 9 || x < 0 || y > 2 || y < 0){
+          return false;
+        }
+        // end recursion if current block is not the same at start color
+        else if (blocks[x + y * 10] != start_color){
+          return false;
+        } else {
+          // sets current block to black
+          blocks[x + y * 10] = new_color;
+          // check adjacent blocks and call rfill recursively
+          rfill(x + 1, y, start_color, new_color);
+          rfill(x - 1, y, start_color, new_color);
+          rfill(x, y + 1, start_color, new_color);
+          rfill(x, y - 1, start_color, new_color);
+          // recreate the grid with updated colors
+          drawWorld();
+        }
+      }
+
+      drawWorld();
+
+
+    </script>
+  </body>
+</html>
